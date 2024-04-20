@@ -1,3 +1,9 @@
+require_relative "chess_pieces/rook"
+require_relative "chess_pieces/knight"
+require_relative "chess_pieces/queen"
+require_relative "chess_pieces/king"
+require_relative "chess_pieces/pawn"
+require_relative "chess_pieces/bishop"
 
 class Board
 
@@ -5,9 +11,17 @@ class Board
   BLACK = [0, 0, 0]
   PURPLE = [187, 120, 247]
   BLUE = [85, 85, 255]
+  START_SHAPE = [[Rook.new("black"), Knight.new("black"), Bishop.new("black"), Queen.new("black"), King.new("black"), Bishop.new("black"), Knight.new("black"), Rook.new("black")],
+                [Pawn.new("black"), Pawn.new("black"), Pawn.new("black"), Pawn.new("black"), Pawn.new("black"), Pawn.new("black"), Pawn.new("black"), Pawn.new("black")],
+                [nil,nil,nil,nil,nil,nil,nil,nil],
+                [nil,nil,nil,nil,nil,nil,nil,nil],
+                [nil,nil,nil,nil,nil,nil,nil,nil],
+                [nil,nil,nil,nil,nil,nil,nil,nil],
+                [Pawn.new("white"), Pawn.new("white"), Pawn.new("white"), Pawn.new("white"), Pawn.new("white"), Pawn.new("white"), Pawn.new("white"), Pawn.new("white")],
+                [Rook.new("white"), Knight.new("white"), Bishop.new("white"), King.new("white"), Queen.new("white"), Bishop.new("white"), Knight.new("white"), Rook.new("white")]]
 
   def initialize
-    @shape = Array.new(8) { Array.new(8) }
+    @shape = START_SHAPE
   end
 
   def render
@@ -23,15 +37,17 @@ class Board
   
   def render_row row, row_idx
     <<~ROW
-      │#{build_line(row, row_idx, "     ")}│
-      │#{build_line(row, row_idx, "  ♔  ")}│ #{8 - row_idx}
-      │#{build_line(row, row_idx, "     ")}│
+      │#{build_line(row, row_idx, true)}│
+      │#{build_line(row, row_idx, false)}│ #{8 - row_idx}
+      │#{build_line(row, row_idx, true)}│
     ROW
   end
 
-  def build_line row, row_idx, char
+  def build_line row, row_idx, empty_row
+    char = "     "
     line = ""
     row.each_with_index do |pos, pos_idx|
+      char = "  #{@shape[row_idx][pos_idx].symbol}  " if !@shape[row_idx][pos_idx].nil? && !empty_row
       cell = colorize(char, (pos_idx + row_idx).even? ? BLUE : PURPLE, WHITE)
       line += cell
     end
